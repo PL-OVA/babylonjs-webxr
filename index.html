@@ -4,19 +4,18 @@
     <script type="text/javascript">
       let canvas;
       let engine;
-      let scene;    
+      let scene;
       window.onload = function() {
         canvas = document.getElementById("renderCanvas");
-        engine = new BABYLON.Engine(canvas, true);    
+        engine = new BABYLON.Engine(canvas, true);
         createScene();
         addObjects();
         initializeXR();
-
         engine.runRenderLoop(function () {
           if (scene && scene.activeCamera) {
             scene.render();
           }
-        });        
+        });
       }
 
       function createScene() {
@@ -25,11 +24,11 @@
         let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, -0.5),scene);
         let camera = new BABYLON.ArcRotateCamera("camera", -Math.PI/2,Math.PI/2, 3, new BABYLON.Vector3(0, 0, 0));
         light.castShadow = true;
-        camera.attachControl(canvas, true); 
+        camera.attachControl(canvas, true);
       }
 
       async function initializeXR(){
-        let xr = await scene.createDefaultXRExperienceAsync({});  
+        let xr = await scene.createDefaultXRExperienceAsync({});
         if (!xr.baseExperience) {}
         else {
           xr.baseExperience.featuresManager.enableFeature(BABYLON.WebXRFeatureName.HAND_TRACKING, "latest", {
@@ -38,10 +37,17 @@
         }        
       }
 
-      function addObjects(){    
-        let ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000});
+      function addObjectsToScene(instanceCount){
 
-        let box = BABYLON.MeshBuilder.CreateBox("box", {width: 0.3, height: 0.3, depth: 0.3}); 
+        for(let i = 0; i < instanceCount; i++){
+
+        }
+
+      }
+
+      function addObjects(){
+        let ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000});
+        let box = BABYLON.MeshBuilder.CreateBox("box", {width: 0.3, height: 0.3, depth: 0.3});
         setObjectPosition(box, 0,1,0);
         setObjectMaterial(box,new BABYLON.StandardMaterial("material"));
         setObjectMaterialColor(box,BABYLON.Color3.Random());
