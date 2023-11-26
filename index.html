@@ -5,10 +5,12 @@
       let canvas;
       let engine;
       let scene;
+      let light;
       window.onload = function() {
         canvas = document.getElementById("renderCanvas");
         engine = new BABYLON.Engine(canvas, true);
         createScene();
+        setSkybox(scene);
         addObjects();
         initializeXR();
         engine.runRenderLoop(function () {
@@ -20,11 +22,37 @@
 
       function createScene() {
         scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color3.Blue;
-        let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, -0.5),scene);
-        let camera = new BABYLON.ArcRotateCamera("camera", -Math.PI/2,Math.PI/2, 3, new BABYLON.Vector3(0, 0, 0));
-        light.castShadow = true;
+        light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, -0.5),scene);
+        let camera = new BABYLON.ArcRotateCamera("camera", -Math.PI/2,Math.PI/2, 3, new BABYLON.Vector3(0, 1, 0));
         camera.attachControl(canvas, true);
+        //light.color = new BABYLON.Color3(0.2, 0.9, 0.9);
+
+        scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+        //BABYLON.Scene.FOGMODE_NONE;
+        //BABYLON.Scene.FOGMODE_EXP;
+        //BABYLON.Scene.FOGMODE_EXP2;
+        //BABYLON.Scene.FOGMODE_LINEAR;
+
+        scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+        scene.fogDensity = 0.0001;
+        //Only if LINEAR
+        //scene.fogStart = 20.0;
+        //scene.fogEnd = 5000.0;
+
+        const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 5000, height: 5000});
+        ground.receiveShadows = true;
+
+        const material = new BABYLON.StandardMaterial("myMaterial", scene);
+        ground.material = material;
+
+        material.bumpTexture = new BABYLON.Texture("textures/ground/ground_normal.jpg", scene);
+        material.bumpTexture.uScale = 500;
+        material.bumpTexture.vScale = 500;
+        material.diffuseTexture = new BABYLON.Texture("textures/ground/ground_a_1.jpg", scene);
+        material.diffuseTexture.uScale = 500;
+        material.diffuseTexture.vScale = 500;
+        material.diffuseColor = new BABYLON.Color3(1.13, 1.1, 1.1);
+
       }
 
       async function initializeXR(){
@@ -37,6 +65,18 @@
         }        
       }
 
+      function setSkybox(){
+        const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 5000.0 }, scene);
+        const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.disableLighting = true;
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/skybox", scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skybox.material = skyboxMaterial;
+        skybox.infiniteDistance = true;
+        skybox.renderingGroupId = 0;
+      }
+
       function addObjectsToScene(instanceCount){
 
         for(let i = 0; i < instanceCount; i++){
@@ -46,7 +86,6 @@
       }
 
       function addObjects(){
-        let ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000});
         let box = BABYLON.MeshBuilder.CreateBox("box", {width: 0.3, height: 0.3, depth: 0.3});
         setObjectPosition(box, 0,1,0);
         setObjectMaterial(box,new BABYLON.StandardMaterial("material"));
@@ -56,6 +95,9 @@
         let octa = BABYLON.MeshBuilder.CreatePolyhedron("octa", {type:1,size: 0.15});
         setObjectPosition(octa,0.5,1,0);
         setGizmo(octa);
+        //shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+        //shadowGenerator.getShadowMap().renderList.push(box);
+        //shadowGenerator.addShadowCaster(box, true);
       }
 
       function setObjectPosition(object, xPosition,yPosition,zPosition){
