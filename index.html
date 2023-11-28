@@ -14,11 +14,11 @@
 
         setScene();
         setLight();
-        setShadow();
+        setShadowGenerator();
         setCamera();
+        setGround();
         setFog(scene);
         setSkybox(scene);
-        setGround();
         addObjects();
         initializeXR();
 
@@ -48,7 +48,7 @@
         //let light2 = BABYLON.HemisphericalLight("light", new BABYLON.Vector3(1, 1, -0.5),scene);
       }
 
-      function setShadow(){
+      function setShadowGenerator(){
         shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
       }
 
