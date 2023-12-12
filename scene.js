@@ -3,7 +3,7 @@ let engine;
 let scene;
 let light;
 let shadowGenerator;
-
+  
 window.onload = function () {
     canvas = document.getElementById("renderCanvas");
     engine = new BABYLON.Engine(canvas, true);
