@@ -54,7 +54,7 @@ function setCamera() {
 }
 
 function setFog(scene) {
-    scene.fogColor = new BABYLON.Color3(1, 2, 3);
+    scene.fogColor = new BABYLON.Color3(0.5, 0.7, 1);
     scene.fogDensity = 0.0000;
     scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
     //BABYLON.Scene.FOGMODE_NONE;
@@ -83,10 +83,11 @@ function setGround() {
 
 function setSkybox() {
     const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 2000.0 }, scene);
-    const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    const skyboxMaterial = new BABYLON.BackgroundMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.disableLighting = true;
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://stellarx-webxr-resources.s3.ca-central-1.amazonaws.com/textures/skybox/skybox", scene);
+    //skyboxMaterial.reflectionTexture = new BABYLON.HDRCubeTexture('textures/skybox/FluffballDay4k.hdr', scene, 512, false, true, false, true);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skybox.material = skyboxMaterial;
     skybox.infiniteDistance = true;
@@ -110,6 +111,8 @@ function addObjects() {
     let octa = BABYLON.MeshBuilder.CreatePolyhedron("octa", { type: 1, size: 0.15 });
     setObjectPosition(octa, 0.5, 1, 0);
     setGizmo(octa);
+
+    addSkySphere(0,1,0);
 
     shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
     shadowGenerator.getShadowMap().renderList.push(box);
@@ -157,4 +160,17 @@ function setGizmo(object) {
     gizmoManager.gizmos.boundingBoxGizmo.scaleBoxSize = 0.04;
     gizmoManager.gizmos.boundingBoxGizmo.rotationSphereSize = 0.05;
     gizmoManager.attachableMeshes = [object];
+}
+
+function addSkySphere(position) {
+    let box = BABYLON.MeshBuilder.CreateSphere("box", { width: 0.3, height: 0.3, depth: 0.3 });
+    
+    setObjectPosition(box, 0, 1, 0);
+    addDragBehaviour(box);
+    
+    const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+box.material = skyboxMaterial;
+    skyboxMaterial.disableLighting = true;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://stellarx-webxr-resources.s3.ca-central-1.amazonaws.com/textures/skybox/skybox", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 }
